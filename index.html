@@ -2156,8 +2156,7 @@
     <i class="fab fa-whatsapp"></i>
   </a>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  
 
 
  <!-- AOS -->
@@ -2263,6 +2262,115 @@ increaseQty.addEventListener('click', () => {
 });
 quantityInput.addEventListener('input', updateOrderTotal);
 updateOrderTotal();
+
+/* ===================== FAQ ACCORDION ===================== */
+const faqItems = document.querySelectorAll('.faq-item');
+
+faqItems.forEach(item => {
+  const question = item.querySelector('.faq-question');
+  
+  question.addEventListener('click', () => {
+    // Close other FAQ items
+    faqItems.forEach(otherItem => {
+      if (otherItem !== item && otherItem.classList.contains('active')) {
+        otherItem.classList.remove('active');
+      }
+    });
+    
+    // Toggle current FAQ item
+    item.classList.toggle('active');
+  });
+});
+
+/* ===================== CUSTOMER REVIEWS SLIDER ===================== */
+const reviewsContainer = document.getElementById('reviewsContainer');
+const reviewCards = document.querySelectorAll('.review-card');
+const sliderDots = document.querySelectorAll('.slider-dot');
+const prevBtn = document.getElementById('prevReview');
+const nextBtn = document.getElementById('nextReview');
+
+let currentSlide = 0;
+const totalSlides = reviewCards.length;
+const cardWidth = 100; // 100% width for mobile view
+
+// Initialize slider
+function initSlider() {
+  updateSliderPosition();
+  updateSliderDots();
+}
+
+// Update slider position
+function updateSliderPosition() {
+  // For desktop, we use gap calculation
+  const container = reviewsContainer;
+  const gap = 32; // 2rem gap in pixels
+  const cardWidth = reviewCards[0].offsetWidth;
+  const translateX = -(currentSlide * (cardWidth + gap));
+  
+  container.style.transform = `translateX(${translateX}px)`;
+  container.style.transition = 'transform 0.5s ease';
+}
+
+// Update slider dots
+function updateSliderDots() {
+  sliderDots.forEach((dot, index) => {
+    dot.classList.toggle('active', index === currentSlide);
+  });
+}
+
+// Go to specific slide
+function goToSlide(slideIndex) {
+  // Ensure slide index is within bounds
+  if (slideIndex < 0) slideIndex = totalSlides - 1;
+  if (slideIndex >= totalSlides) slideIndex = 0;
+  
+  currentSlide = slideIndex;
+  updateSliderPosition();
+  updateSliderDots();
+}
+
+// Event listeners for slider controls
+prevBtn.addEventListener('click', () => {
+  goToSlide(currentSlide - 1);
+});
+
+nextBtn.addEventListener('click', () => {
+  goToSlide(currentSlide + 1);
+});
+
+// Event listeners for slider dots
+sliderDots.forEach((dot, index) => {
+  dot.addEventListener('click', () => {
+    goToSlide(index);
+  });
+});
+
+// Auto slide every 5 seconds
+let autoSlideInterval;
+
+function startAutoSlide() {
+  autoSlideInterval = setInterval(() => {
+    goToSlide(currentSlide + 1);
+  }, 5000);
+}
+
+function stopAutoSlide() {
+  clearInterval(autoSlideInterval);
+}
+
+// Pause auto-slide on hover
+reviewsContainer.addEventListener('mouseenter', stopAutoSlide);
+reviewsContainer.addEventListener('mouseleave', startAutoSlide);
+
+// Initialize slider and start auto-slide
+initSlider();
+startAutoSlide();
+
+// Handle window resize
+window.addEventListener('resize', () => {
+  // Reset slider position on resize
+  updateSliderPosition();
+});
 
 /* ===================== EMAILJS ===================== */
 emailjs.init("2ebBAJBkDrupcL5F7");
